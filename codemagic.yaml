@@ -1,0 +1,31 @@
+workflows:
+  my-workflow:
+    name: Build and Test Aladia Login App
+    max_build_duration: 60
+    environment:
+      flutter: latest
+      xcode: latest
+      cocoapods: default
+      vars:
+        CFBundleVersion: 1
+        CFBundleShortVersionString: 1.0.0
+    scripts:
+      - name: Install dependencies
+        script: |
+          flutter pub get
+      - name: Run tests
+        script: |
+          flutter test
+      - name: Build APK
+        script: |
+          flutter build apk --release
+      - name: Build iOS
+        script: |
+          flutter build ios --release --no-codesign
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/ios/iphoneos/**/*.ipa
+    publishing:
+      email:
+        recipients:
+          - naolcovered@gmail.com
