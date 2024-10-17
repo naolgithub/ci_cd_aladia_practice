@@ -104,7 +104,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       Positioned(
-                        // top: 15,
                         left: 75,
                         child: CustomPaint(
                           size: const Size(271, 140),
