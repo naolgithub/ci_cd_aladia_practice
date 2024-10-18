@@ -1,16 +1,11 @@
 import 'dart:developer';
 
+import 'package:aladia_one/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 void main() {
-  // const bool isDevelopment = bool.fromEnvironment('dart.vm.product') == false;
-  // if (isDevelopment) {
-  //   runApp(const WidgetbookApp());
-  // } else {
-  //   runApp(const MyApp());
-  // }
   runApp(const MyApp());
 }
 
@@ -24,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }
