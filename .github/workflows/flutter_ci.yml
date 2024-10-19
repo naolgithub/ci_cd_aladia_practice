@@ -26,6 +26,35 @@ jobs:
       - name: Build Widgetbook
         run: flutter build web -t lib/widgetbook/widgetbook.dart
 
+      # Step 4: Run Flutter analyze
+      - name: Run Flutter analyze
+        run: flutter analyze
+
+      # Step 5: Run unit tests
+      - name: Run tests
+        run: flutter test
+
+      # Step 6: Build APK and IPA
+      - name: Build APK
+        run: flutter build apk --release
+
+      # Add this step to build iOS if you're deploying for iOS
+      # - name: Build IPA for iOS
+      #   run: flutter build ios --release --no-codesign
+
+      # Step 7: Deploy to Firebase App Distribution (Android)
+      - name: Deploy to Firebase App Distribution (Android)
+        run: firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+              --app <ci-cd-practice-8a5a4> \
+              --groups testers \
+              --token ${{ secrets.FIREBASE_TOKEN }}
+
+      # Step 8: Deploy to Firebase App Distribution (iOS) (optional)
+      # - name: Deploy to Firebase App Distribution (iOS)
+      #   run: firebase appdistribution:distribute build/ios/ipa/app.ipa \
+      #         --app <ci-cd-practice-8a5a4> \
+      #         --groups testers \
+      #         --token ${{ secrets.FIREBASE_TOKEN }}        
       # - name: Install Widgetbook CLI
       #   run: dart pub global activate --source path ../packages/widgetbook_cli
 
