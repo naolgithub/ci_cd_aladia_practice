@@ -470,6 +470,35 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class LoginRequest {
+  final String email;
+  final String password;
+
+  LoginRequest({
+    required this.email,
+    required this.password,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'email': email,
+      'password': password,
+    };
+  }
+}
+
+class LoginResponse {
+  final String accessToken;
+
+  LoginResponse({
+    required this.accessToken,
+  });
+
+  factory LoginResponse.fromJson(Map<String, dynamic> json) {
+    return LoginResponse(accessToken: json['accessToken']);
+  }
+}
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -482,39 +511,97 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
 
-  Future<void> login() async {
+  // Future<void> login() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+
+  //   const String apiUrl = 'https://dev-api.aladia.io/v2/auth/login';
+  //   String emailValue = "mobile@aladia.io";
+  //   String passwordValue = "Pass@123";
+  //   final response = await http.post(
+  //     Uri.parse(apiUrl),
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: jsonEncode({
+  //       'email': emailValue,
+  //       'password': passwordValue,
+  //     }),
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //     final String accessToken = data['accessToken'];
+  //     log('Login successful, token: $accessToken');
+  //   } else {
+  //     log('Login failed: ${response.body}');
+  //   }
+
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+  // }
+  final _emailTextField = TextEditingController();
+  final _passwordTextField = TextEditingController();
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  Future<void> _login() async {
     setState(() {
-      isLoading = true;
+      _isLoading = true;
+      _errorMessage = null;
     });
 
-    const String apiUrl = 'https://dev-api.aladia.io/v2/auth/login';
-    String emailValue = "mobile@aladia.io";
-    String passwordValue = "Pass@123";
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': emailValue,
-        'password': passwordValue,
-      }),
+    // String emailValue = "mobile@aladia.io";
+    // String passwordValue = "Pass@123";
+
+    // Creating the LoginRequest model instance
+    final loginRequest = LoginRequest(
+      // email: emailValue,
+      // password: passwordValue,
+      email: _emailTextField.toString(),
+      password: _passwordTextField.toString(),
     );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final String accessToken = data['accessToken'];
-      log('Login successful, token: $accessToken');
-    } else {
-      log('Login failed: ${response.body}');
-    }
+    try {
+      // Sending the login request to the API
+      final response = await http.post(
+        Uri.parse('https://dev-api.aladia.io/v2/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(loginRequest.toJson()),
+      );
 
-    setState(() {
-      isLoading = false;
-    });
+      if (response.statusCode == 200) {
+        // Parse the LoginResponse if successful
+        final loginResponse = LoginResponse.fromJson(jsonDecode(response.body));
+
+        // Handle success (e.g., save token, navigate to the next page, etc.)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Login successful! Token: ${loginResponse.accessToken}')),
+        );
+      } else {
+        // Handle error response
+        setState(() {
+          _errorMessage = 'Login failed. Please check your credentials.';
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _errorMessage = 'An error occurred. Please try again.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return 
+    
+    Scaffold(
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -635,7 +722,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 25),
                 ElevatedButton(
-                  onPressed: isLoading ? null : login,
+                  onPressed: isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50), // Full width
                     shape: RoundedRectangleBorder(
